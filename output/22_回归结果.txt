@@ -1,0 +1,51 @@
+                 Generalized Linear Model Regression Results                  
+==============================================================================
+Dep. Variable:                      y   No. Observations:               239767
+Model:                            GLM   Df Residuals:                   239750
+Model Family:                Binomial   Df Model:                           16
+Link Function:                  Logit   Scale:                          1.0000
+Method:                          IRLS   Log-Likelihood:                -65118.
+Date:                Thu, 17 Sep 2026   Deviance:                   1.3024e+05
+Time:                        02:01:07   Pearson chi2:                 2.37e+05
+No. Iterations:                     6   Pseudo R-squ. (CS):            0.02839
+Covariance Type:            nonrobust                                         
+========================================================================================
+                           coef    std err          z      P>|z|      [0.025      0.975]
+----------------------------------------------------------------------------------------
+const                   -2.4049      0.008   -309.225      0.000      -2.420      -2.390
+acc_open_past_24mths     0.4963      0.030     16.496      0.000       0.437       0.555
+fico_range_low           0.4570      0.030     15.193      0.000       0.398       0.516
+verification_status      0.5218      0.029     17.928      0.000       0.465       0.579
+mths_since_rcnt_il       0.4516      0.034     13.365      0.000       0.385       0.518
+dti                      0.7064      0.032     22.184      0.000       0.644       0.769
+inq_last_12m             0.1583      0.043      3.706      0.000       0.075       0.242
+inq_last_6mths           0.4991      0.038     13.166      0.000       0.425       0.573
+bc_open_to_buy           0.3772      0.047      7.952      0.000       0.284       0.470
+tot_hi_cred_lim          0.4864      0.053      9.192      0.000       0.383       0.590
+mths_since_recent_bc     0.4715      0.045     10.592      0.000       0.384       0.559
+all_util                 0.2545      0.047      5.396      0.000       0.162       0.347
+inq_fi                   0.2831      0.045      6.307      0.000       0.195       0.371
+home_ownership           0.4930      0.052      9.539      0.000       0.392       0.594
+annual_inc               0.3658      0.053      6.856      0.000       0.261       0.470
+mo_sin_old_rev_tl_op     0.3282      0.044      7.386      0.000       0.241       0.415
+addr_state               0.9821      0.054     18.326      0.000       0.877       1.087
+========================================================================================
+
+=== VIF ===
+                  变量   VIF
+     tot_hi_cred_lim 2.097
+        inq_last_12m 2.008
+      bc_open_to_buy 1.839
+acc_open_past_24mths 1.720
+      home_ownership 1.607
+            all_util 1.586
+          annual_inc 1.584
+      fico_range_low 1.571
+      inq_last_6mths 1.457
+              inq_fi 1.396
+  mths_since_rcnt_il 1.344
+mths_since_recent_bc 1.339
+                 dti 1.187
+mo_sin_old_rev_tl_op 1.169
+ verification_status 1.101
+          addr_state 1.006

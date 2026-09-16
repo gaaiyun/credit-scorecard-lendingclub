@@ -1,0 +1,88 @@
+
+========================================================================
+  第 1 步  抽取建模全集 + 防泄漏字段过滤
+========================================================================
+原始表 151 列，判定表 151 条
+[OK] 151 列全部有判定，无遗漏
+
+    MODEL      79 列
+    LEAK       39 列
+    SPARSE     16 列
+    PRICING     4 列
+    PLATFORM    4 列
+    ID          3 列
+    TARGET      3 列
+    TEXT        3 列
+[OK] 逐列判定表 -> G:\风控评分卡项目\docs\字段判定表.csv
+    实际读入 92 列（79 个建模候选 + 标签/收益辅助列）
+
+读取 accepted_2007_to_2018Q4.csv（只读 92 / 151 列）...
+  同一遍扫描里：A) 全历史缺失率统计（流式）  B) 建模窗口物化
+[OK] 原始 2,260,701 行 -> 36 months 共 1,609,754 行 -> 建模窗口 2016-01~2018-12：988,585 行，用时 44s
+
+-- [全历史] 缺失率随放款期剧烈变化的变量（采集口径变更的证据，前 15）--
+   这些不是人群变了，是 LC 改了采集范围。建模期与 OOT 期若跨越采集口径变更，
+   这些变量的 CSI 会因为一个技术原因爆表，而你会误判成人群漂移。
+                            2014H1  2014H2  2015H1  2015H2  2016H1  2016H2  2017H1  2017H2  2018H1  2018H2  最大最小差
+变量                                                                                                               
+open_rv_12m                 1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+max_bal_bc                  1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+open_rv_24m                 1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+total_rev_hi_lim            0.0000     0.0     0.0   0.000  0.0000     0.0     0.0  0.0000  0.0000  0.0000    1.0
+inq_last_12m                1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+total_cu_tl                 1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+inq_fi                      1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+avg_cur_bal                 0.0001     0.0     0.0   0.000  0.0000     0.0     0.0  0.0001  0.0001  0.0001    1.0
+tot_coll_amt                0.0000     0.0     0.0   0.000  0.0000     0.0     0.0  0.0000  0.0000  0.0000    1.0
+tot_cur_bal                 0.0000     0.0     0.0   0.000  0.0000     0.0     0.0  0.0000  0.0000  0.0000    1.0
+open_acc_6m                 1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+open_il_12m                 1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+open_il_24m                 1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+open_act_il                 1.0000     1.0     1.0   0.908  0.0003     0.0     0.0  0.0000  0.0000  0.0000    1.0
+collections_12_mths_ex_med  0.0000     0.0     0.0   0.000  0.0000     0.0     0.0  0.0000  0.0000  0.0000    1.0
+
+[全历史标记] 缺失率跨期波动 > 50 个百分点的变量共 63 个：
+    open_rv_12m, max_bal_bc, open_rv_24m, total_rev_hi_lim, inq_last_12m, total_cu_tl, inq_fi, avg_cur_bal, tot_coll_amt, tot_cur_bal, open_acc_6m, open_il_12m, open_il_24m, open_act_il, collections_12_mths_ex_med, pct_tl_nvr_dlq, pub_rec_bankruptcies, tax_liens, tot_hi_cred_lim, total_bc_limit, total_bal_ex_mort, num_tl_90g_dpd_24m, num_tl_op_past_12m, total_il_high_credit_limit, num_op_rev_tl, num_rev_accts, num_actv_rev_tl, mo_sin_rcnt_tl, mort_acc, mo_sin_old_rev_tl_op, total_bal_il, acc_open_past_24mths, chargeoff_within_12_mths, num_rev_tl_bal_gt_0, num_sats, num_tl_120dpd_2m, num_tl_30dpd, num_il_tl, num_bc_tl, num_actv_bc_tl, num_accts_ever_120_pd, num_bc_sats, mo_sin_rcnt_rev_tl_op, all_util, mths_since_recent_bc, percent_bc_gt_75, bc_open_to_buy, bc_util, mths_since_rcnt_il, mo_sin_old_il_acct, mths_since_last_record, mths_since_recent_inq, open_acc, acc_now_delinq, pub_rec, delinq_amnt, delinq_2yrs, inq_last_6mths, total_acc, earliest_cr_line, revol_util, il_util, mths_since_last_delinq
+[窗口选择] 因此建模窗口起点定在 2016-01——这些字段在此之后缺失率已稳定。
+
+-- 放款月分布（按半年）--
+issue_half
+2016H1    170657
+2016H2    152838
+2017H1    149515
+2017H2    170904
+2018H1    166918
+2018H2    177753
+
+-- loan_status 分布 --
+                         n      占比
+loan_status                       
+Current             566623  0.5732
+Fully Paid          324862  0.3286
+Charged Off          77297  0.0782
+Late (31-120 days)   12413  0.0126
+In Grace Period       4825  0.0049
+Late (16-30 days)     2540  0.0026
+Default                 25  0.0000
+
+-- [建模窗口内] 缺失率波动最大的 10 个变量 --
+issue_half                      2016H1  2016H2  2017H1  2017H2  2018H1  2018H2   最大最小差
+变量                                                                                    
+mths_since_last_delinq          0.4754  0.4606  0.4814  0.5143  0.5535  0.5486  0.0929
+mths_since_last_record          0.8138  0.7971  0.8035  0.8487  0.8683  0.8786  0.0815
+mths_since_recent_revol_delinq  0.6369  0.6295  0.6448  0.6718  0.7054  0.7013  0.0759
+mths_since_last_major_derog     0.7112  0.7009  0.7185  0.7367  0.7629  0.7615  0.0620
+mths_since_recent_bc_dlq        0.7441  0.7386  0.7557  0.7739  0.7974  0.7954  0.0588
+il_util                         0.1451  0.1360  0.1379  0.1553  0.1752  0.1678  0.0392
+num_tl_120dpd_2m                0.0493  0.0401  0.0445  0.0460  0.0241  0.0223  0.0270
+emp_length_num                  0.0752  0.0699  0.0746  0.0828  0.0893  0.0927  0.0228
+mths_since_recent_inq           0.1066  0.1111  0.1182  0.1226  0.1252  0.1261  0.0195
+mo_sin_old_il_acct              0.0321  0.0301  0.0295  0.0374  0.0441  0.0415  0.0146
+
+[窗口内校验] 缺失率跨期波动 > 50 个百分点的变量共 0 个：无
+    窗口内为 0 个，说明起点选对了：剩下的缺失率波动都是人群变化，不是采集口径变化。
+    窗口内最大波动 0.0929（mths_since_last_delinq），属正常人群漂移量级。
+
+内存压缩：0.89 GB -> 0.40 GB（float32 + category）
+[OK] 建模全集 -> G:\风控评分卡项目\data\processed\accepted_36m.parquet  (988,585 行 x 95 列, 97 MB)
+[OK] 全步用时 54s

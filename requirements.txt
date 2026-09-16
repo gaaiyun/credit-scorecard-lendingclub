@@ -1,0 +1,11 @@
+# 评分卡全流程依赖。分箱 / WOE / IV / KS / PSI / CSI / 刻度全部手写，
+# 没有用 toad、scorecardpy —— 见 README「为什么不调包」。
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3      # 只用决策树找分箱切点、ROC/AUC、train_test_split
+statsmodels>=0.14      # 逻辑回归（要系数 p 值和带权重的 GLM）
+scipy>=1.10            # 秩相关检验
+xgboost>=2.0           # 仅用于对照模型
+matplotlib>=3.7
+pyarrow>=14.0          # parquet 读写
+kaggle>=1.6            # 仅用于下载 rejected 数据，跑模型不需要

@@ -1,0 +1,33 @@
+# 原始数据与中间结果：大文件，不进 git
+data/raw/
+data/processed/
+*.csv.gz
+*.parquet
+
+# 但 output/ 下的产物要进 git —— 简历上每个数字都要能在这里找到出处
+!output/*.csv
+!output/*.png
+!output/*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# 凭证：绝不能进仓库
+kaggle.json
+.kaggle/
+access_token
+*.token
+.env
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 本地笔记，不进仓库
+提示词-*.md
